@@ -2,6 +2,13 @@
 
 RCMessageKit is a light-weight and easy-to-use Chat user interface framework for iOS.
 
+---
+
+<img src="http://relatedcode.com/screen/chat03.png" width="290">.<img src="http://relatedcode.com/screen/chat02.png" width="290">.<img src="http://relatedcode.com/screen/chat01.png" width="290">
+<img src="http://relatedcode.com/screen/chat05.png" width="290">.<img src="http://relatedcode.com/screen/chat04.png" width="290">.<img src="http://relatedcode.com/screen/chat06.png" width="290">
+
+---
+
 Supported message types:
 - Text
 - Emoji
@@ -11,7 +18,13 @@ Supported message types:
 - Location
 - Status
 
-You can check the demo app [here](https://github.com/relatedcode/Messenger).
+You can check the demo app here: [Messenger](https://github.com/relatedcode/Messenger).
+
+---
+
+<img src="http://relatedcode.com/screen/chat07.png" width="290">.<img src="http://relatedcode.com/screen/chat08.png" width="290">.<img src="http://relatedcode.com/screen/chat09.png" width="290">
+
+---
 
 ## INSTALLATION
 
@@ -29,6 +42,11 @@ You can check the demo app [here](https://github.com/relatedcode/Messenger).
 - iOS 9.3
 - ARC
 
+---
+
+<img src="http://relatedcode.com/screen/chat10.png" width="290">.<img src="http://relatedcode.com/screen/chat11.png" width="290">.<img src="http://relatedcode.com/screen/chat12.png" width="290">
+
+---
 ## CONTACT
 
 Do you have any questions or idea? My email is: info@relatedcode.com or you can find some more info at [relatedcode.com](http://relatedcode.com)
