@@ -13,28 +13,17 @@
 #import "RCMessagesView.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-@interface RCMessagesCell : UITableViewCell
+@interface RCBubbleHeaderCell : UITableViewCell
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma mark -
 
-@property (strong, nonatomic) UILabel *labelCellHeader;
 @property (strong, nonatomic) UILabel *labelBubbleHeader;
-
-@property (strong, nonatomic) UIView *viewBubble;
-
-@property (strong, nonatomic) UIImageView *imageAvatar;
-@property (strong, nonatomic) UILabel *labelAvatar;
-
-@property (strong, nonatomic) UILabel *labelBubbleFooter;
-@property (strong, nonatomic) UILabel *labelCellFooter;
 
 #pragma mark -
 
 - (void)bindData:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView;
 
-- (void)layoutSubviews:(CGSize)size;
-
-+ (CGFloat)height:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView size:(CGSize)size;
++ (CGFloat)height:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView;
 
 @end

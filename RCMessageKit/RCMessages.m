@@ -31,23 +31,23 @@
 {
 	self = [super init];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	// Cell
+	// Section
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	self.cellMarginTop					= 8.0;
+	self.sectionHeaderMargin			= 8.0;
 
-	self.cellHeaderHeight				= 20.0;
-	self.cellHeaderLeft					= 10.0;
-	self.cellHeaderRight				= 10.0;
-	self.cellHeaderColor				= [UIColor lightGrayColor];
-	self.cellHeaderFont					= [UIFont systemFontOfSize:12];
+	self.sectionHeaderHeight			= 20.0;
+	self.sectionHeaderLeft				= 10.0;
+	self.sectionHeaderRight				= 10.0;
+	self.sectionHeaderColor				= [UIColor lightGrayColor];
+	self.sectionHeaderFont				= [UIFont systemFontOfSize:12];
 
-	self.cellFooterHeight				= 15.0;
-	self.cellFooterLeft					= 10.0;
-	self.cellFooterRight				= 10.0;
-	self.cellFooterColor				= [UIColor lightGrayColor];
-	self.cellFooterFont					= [UIFont systemFontOfSize:12];
+	self.sectionFooterHeight			= 15.0;
+	self.sectionFooterLeft				= 10.0;
+	self.sectionFooterRight				= 10.0;
+	self.sectionFooterColor				= [UIColor lightGrayColor];
+	self.sectionFooterFont				= [UIFont systemFontOfSize:12];
 
-	self.cellMarginBottom				= 8.0;
+	self.sectionFooterMargin			= 8.0;
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
@@ -217,23 +217,23 @@
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-// Cell
+// Section
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-+ (CGFloat)cellMarginTop					{	return [self shared].cellMarginTop;					}
++ (CGFloat)sectionHeaderMargin				{	return [self shared].sectionHeaderMargin;			}
 
-+ (CGFloat)cellHeaderHeight					{	return [self shared].cellHeaderHeight;				}
-+ (CGFloat)cellHeaderLeft					{	return [self shared].cellHeaderLeft;				}
-+ (CGFloat)cellHeaderRight					{	return [self shared].cellHeaderRight;				}
-+ (UIColor *)cellHeaderColor				{	return [self shared].cellHeaderColor;				}
-+ (UIFont *)cellHeaderFont					{	return [self shared].cellHeaderFont;				}
++ (CGFloat)sectionHeaderHeight				{	return [self shared].sectionHeaderHeight;			}
++ (CGFloat)sectionHeaderLeft				{	return [self shared].sectionHeaderLeft;				}
++ (CGFloat)sectionHeaderRight				{	return [self shared].sectionHeaderRight;			}
++ (UIColor *)sectionHeaderColor				{	return [self shared].sectionHeaderColor;			}
++ (UIFont *)sectionHeaderFont				{	return [self shared].sectionHeaderFont;				}
 
-+ (CGFloat)cellFooterHeight					{	return [self shared].cellFooterHeight;				}
-+ (CGFloat)cellFooterLeft					{	return [self shared].cellFooterLeft;				}
-+ (CGFloat)cellFooterRight					{	return [self shared].cellFooterRight;				}
-+ (UIColor *)cellFooterColor				{	return [self shared].cellFooterColor;				}
-+ (UIFont *)cellFooterFont					{	return [self shared].cellFooterFont;				}
++ (CGFloat)sectionFooterHeight				{	return [self shared].sectionFooterHeight;			}
++ (CGFloat)sectionFooterLeft				{	return [self shared].sectionFooterLeft;				}
++ (CGFloat)sectionFooterRight				{	return [self shared].sectionFooterRight;			}
++ (UIColor *)sectionFooterColor				{	return [self shared].sectionFooterColor;			}
++ (UIFont *)sectionFooterFont				{	return [self shared].sectionFooterFont;				}
 
-+ (CGFloat)cellMarginBottom					{	return [self shared].cellMarginBottom;				}
++ (CGFloat)sectionFooterMargin				{	return [self shared].sectionFooterMargin;			}
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

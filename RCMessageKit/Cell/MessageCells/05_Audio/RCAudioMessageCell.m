@@ -9,10 +9,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "RCMessagesVideoCell.h"
+#import "RCAudioMessageCell.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-@interface RCMessagesVideoCell()
+@interface RCAudioMessageCell()
 {
 	NSIndexPath *indexPath;
 	RCMessagesView *messagesView;
@@ -20,9 +20,9 @@
 @end
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
-@implementation RCMessagesVideoCell
+@implementation RCAudioMessageCell
 
-@synthesize imageView, imagePlay, spinner, imageManual;
+@synthesize imageStatus, labelDuration, spinner, imageManual;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 - (void)bindData:(NSIndexPath *)indexPath_ messagesView:(RCMessagesView *)messagesView_
@@ -37,22 +37,22 @@
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	[super bindData:indexPath messagesView:messagesView];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	self.viewBubble.backgroundColor = rcmessage.incoming ? [RCMessages videoBubbleColorIncoming] : [RCMessages videoBubbleColorOutgoing];
+	self.viewBubble.backgroundColor = rcmessage.incoming ? [RCMessages audioBubbleColorIncoming] : [RCMessages audioBubbleColorOutgoing];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if (imageView == nil)
+	if (imageStatus == nil)
 	{
-		imageView = [[UIImageView alloc] init];
-		imageView.layer.masksToBounds = YES;
-		imageView.layer.cornerRadius = [RCMessages bubbleRadius];
-		[self.viewBubble addSubview:imageView];
+		imageStatus = [[UIImageView alloc] init];
+		[self.viewBubble addSubview:imageStatus];
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if (imagePlay == nil)
+	if (labelDuration == nil)
 	{
-		imagePlay = [[UIImageView alloc] initWithImage:[RCMessages videoImagePlay]];
-		[self.viewBubble addSubview:imagePlay];
+		labelDuration = [[UILabel alloc] init];
+		labelDuration.font = [RCMessages audioFont];
+		labelDuration.textAlignment = NSTextAlignmentRight;
+		[self.viewBubble addSubview:labelDuration];
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	if (spinner == nil)
@@ -63,32 +63,41 @@
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	if (imageManual == nil)
 	{
-		imageManual = [[UIImageView alloc] initWithImage:[RCMessages videoImageManual]];
+		imageManual = [[UIImageView alloc] initWithImage:[RCMessages audioImageManual]];
 		[self.viewBubble addSubview:imageManual];
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (rcmessage.audio_status == RC_AUDIOSTATUS_STOPPED) imageStatus.image = [RCMessages audioImagePlay];
+	if (rcmessage.audio_status == RC_AUDIOSTATUS_PLAYING) imageStatus.image = [RCMessages audioImagePause];
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	labelDuration.textColor = rcmessage.incoming ? [RCMessages audioTextColorIncoming] : [RCMessages audioTextColorOutgoing];
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (rcmessage.audio_duration < 60)
+		labelDuration.text = [NSString stringWithFormat:@"0:%02ld", (long) rcmessage.audio_duration];
+	else labelDuration.text = [NSString stringWithFormat:@"%ld:%02ld", (long) rcmessage.audio_duration / 60, (long) rcmessage.audio_duration % 60];
+	//---------------------------------------------------------------------------------------------------------------------------------------------
 	if (rcmessage.status == RC_STATUS_LOADING)
 	{
-		imageView.image = nil;
-		imagePlay.hidden = YES;
+		imageStatus.hidden = YES;
+		labelDuration.hidden = YES;
 		[spinner startAnimating];
 		imageManual.hidden = YES;
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	if (rcmessage.status == RC_STATUS_SUCCEED)
 	{
-		imageView.image = rcmessage.video_thumbnail;
-		imagePlay.hidden = NO;
+		imageStatus.hidden = NO;
+		labelDuration.hidden = NO;
 		[spinner stopAnimating];
 		imageManual.hidden = YES;
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	if (rcmessage.status == RC_STATUS_MANUAL)
 	{
-		imageView.image = nil;
-		imagePlay.hidden = YES;
+		imageStatus.hidden = YES;
+		labelDuration.hidden = YES;
 		[spinner stopAnimating];
 		imageManual.hidden = NO;
 	}
@@ -99,17 +108,16 @@
 - (void)layoutSubviews
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	CGSize size = [RCMessagesVideoCell size:indexPath messagesView:messagesView];
+	CGSize size = [RCAudioMessageCell size:indexPath messagesView:messagesView];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	[super layoutSubviews:size];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	imageView.frame = CGRectMake(0, 0, size.width, size.height);
+	CGFloat widthStatus = imageStatus.image.size.width;
+	CGFloat heightStatus = imageStatus.image.size.height;
+	CGFloat yStatus = (size.height - heightStatus) / 2;
+	imageStatus.frame = CGRectMake(10, yStatus, widthStatus, heightStatus);
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGFloat widthPlay = imagePlay.image.size.width;
-	CGFloat heightPlay = imagePlay.image.size.height;
-	CGFloat xPlay = (size.width - widthPlay) / 2;
-	CGFloat yPlay = (size.height - heightPlay) / 2;
-	imagePlay.frame = CGRectMake(xPlay, yPlay, widthPlay, heightPlay);
+	labelDuration.frame = CGRectMake(size.width - 100, 0, 90, size.height);
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	CGFloat widthSpinner = spinner.frame.size.width;
 	CGFloat heightSpinner = spinner.frame.size.height;
@@ -131,14 +139,14 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
 	CGSize size = [self size:indexPath messagesView:messagesView];
-	return [RCMessagesCell height:indexPath messagesView:messagesView size:size];
+	return size.height;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 + (CGSize)size:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	return CGSizeMake([RCMessages videoBubbleWidth], [RCMessages videoBubbleHeight]);
+	return CGSizeMake([RCMessages audioBubbleWidht], [RCMessages audioBubbleHeight]);
 }
 
 @end

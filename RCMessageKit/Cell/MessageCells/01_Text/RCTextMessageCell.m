@@ -9,10 +9,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "RCMessagesLocationCell.h"
+#import "RCTextMessageCell.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-@interface RCMessagesLocationCell()
+@interface RCTextMessageCell()
 {
 	NSIndexPath *indexPath;
 	RCMessagesView *messagesView;
@@ -20,9 +20,9 @@
 @end
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
-@implementation RCMessagesLocationCell
+@implementation RCTextMessageCell
 
-@synthesize imageView, spinner;
+@synthesize textView;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 - (void)bindData:(NSIndexPath *)indexPath_ messagesView:(RCMessagesView *)messagesView_
@@ -37,37 +37,29 @@
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	[super bindData:indexPath messagesView:messagesView];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	self.viewBubble.backgroundColor = rcmessage.incoming ? [RCMessages locationBubbleColorIncoming] : [RCMessages locationBubbleColorOutgoing];
+	self.viewBubble.backgroundColor = rcmessage.incoming ? [RCMessages textBubbleColorIncoming] : [RCMessages textBubbleColorOutgoing];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if (imageView == nil)
+	if (textView == nil)
 	{
-		imageView = [[UIImageView alloc] init];
-		imageView.layer.masksToBounds = YES;
-		imageView.layer.cornerRadius = [RCMessages bubbleRadius];
-		[self.viewBubble addSubview:imageView];
-	}
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if (spinner == nil)
-	{
-		spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-		[self.viewBubble addSubview:spinner];
+		textView = [[UITextView alloc] init];
+		textView.font = [RCMessages textFont];
+		textView.editable = NO;
+		textView.selectable = NO;
+		textView.scrollEnabled = NO;
+		textView.userInteractionEnabled = NO;
+		textView.backgroundColor = [UIColor clearColor];
+		textView.textContainer.lineFragmentPadding = 0;
+		textView.textContainerInset = [RCMessages textInset];
+		[self.viewBubble addSubview:textView];
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if (rcmessage.status == RC_STATUS_LOADING)
-	{
-		imageView.image = nil;
-		[spinner startAnimating];
-	}
+	textView.textColor = rcmessage.incoming ? [RCMessages textTextColorIncoming] : [RCMessages textTextColorOutgoing];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if (rcmessage.status == RC_STATUS_SUCCEED)
-	{
-		imageView.image = rcmessage.location_thumbnail;
-		[spinner stopAnimating];
-	}
+	textView.text = rcmessage.text;
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 }
 
@@ -75,17 +67,11 @@
 - (void)layoutSubviews
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	CGSize size = [RCMessagesLocationCell size:indexPath messagesView:messagesView];
+	CGSize size = [RCTextMessageCell size:indexPath messagesView:messagesView];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	[super layoutSubviews:size];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	imageView.frame = CGRectMake(0, 0, size.width, size.height);
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGFloat widthSpinner = spinner.frame.size.width;
-	CGFloat heightSpinner = spinner.frame.size.height;
-	CGFloat xSpinner = (size.width - widthSpinner) / 2;
-	CGFloat ySpinner = (size.height - heightSpinner) / 2;
-	spinner.frame = CGRectMake(xSpinner, ySpinner, widthSpinner, heightSpinner);
+	textView.frame = CGRectMake(0, 0, size.width, size.height);
 }
 
 #pragma mark - Size methods
@@ -95,14 +81,24 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
 	CGSize size = [self size:indexPath messagesView:messagesView];
-	return [RCMessagesCell height:indexPath messagesView:messagesView size:size];
+	return size.height;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 + (CGSize)size:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	return CGSizeMake([RCMessages locationBubbleWidth], [RCMessages locationBubbleHeight]);
+	RCMessage *rcmessage = [messagesView rcmessage:indexPath];
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	CGFloat maxwidth = (0.6 * SCREEN_WIDTH) - [RCMessages textInsetLeft] - [RCMessages textInsetRight];
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	CGRect rect = [rcmessage.text boundingRectWithSize:CGSizeMake(maxwidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin
+											attributes:@{NSFontAttributeName:[RCMessages textFont]} context:nil];
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	CGFloat width = rect.size.width + [RCMessages textInsetLeft] + [RCMessages textInsetRight];
+	CGFloat height = rect.size.height + [RCMessages textInsetTop] + [RCMessages textInsetBottom];
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	return CGSizeMake(fmaxf(width, [RCMessages textBubbleWidthMin]), fmaxf(height, [RCMessages textBubbleHeightMin]));
 }
 
 @end

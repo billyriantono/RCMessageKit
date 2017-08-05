@@ -9,22 +9,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "RCMessagesCell.h"
+#import "RCMessages.h"
+#import "RCMessagesView.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-@interface RCMessagesStatusCell : UITableViewCell
+@interface RCMessageCell : UITableViewCell
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma mark -
 
 @property (strong, nonatomic) UIView *viewBubble;
 
-@property (strong, nonatomic) UITextView *textView;
+@property (strong, nonatomic) UIImageView *imageAvatar;
+@property (strong, nonatomic) UILabel *labelAvatar;
 
 #pragma mark -
 
 - (void)bindData:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView;
 
-+ (CGFloat)height:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView;
+- (void)layoutSubviews:(CGSize)size;
 
 @end

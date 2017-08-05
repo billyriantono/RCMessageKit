@@ -9,10 +9,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "RCMessagesEmojiCell.h"
+#import "RCPictureMessageCell.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-@interface RCMessagesEmojiCell()
+@interface RCPictureMessageCell()
 {
 	NSIndexPath *indexPath;
 	RCMessagesView *messagesView;
@@ -20,9 +20,9 @@
 @end
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
-@implementation RCMessagesEmojiCell
+@implementation RCPictureMessageCell
 
-@synthesize textView;
+@synthesize imageView, spinner, imageManual;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 - (void)bindData:(NSIndexPath *)indexPath_ messagesView:(RCMessagesView *)messagesView_
@@ -37,27 +37,52 @@
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	[super bindData:indexPath messagesView:messagesView];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	self.viewBubble.backgroundColor = rcmessage.incoming ? [RCMessages emojiBubbleColorIncoming] : [RCMessages emojiBubbleColorOutgoing];
+	self.viewBubble.backgroundColor = rcmessage.incoming ? [RCMessages pictureBubbleColorIncoming] : [RCMessages pictureBubbleColorOutgoing];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if (textView == nil)
+	if (imageView == nil)
 	{
-		textView = [[UITextView alloc] init];
-		textView.font = [RCMessages emojiFont];
-		textView.editable = NO;
-		textView.selectable = NO;
-		textView.scrollEnabled = NO;
-		textView.userInteractionEnabled = NO;
-		textView.backgroundColor = [UIColor clearColor];
-		textView.textContainer.lineFragmentPadding = 0;
-		textView.textContainerInset = [RCMessages emojiInset];
-		[self.viewBubble addSubview:textView];
+		imageView = [[UIImageView alloc] init];
+		imageView.layer.masksToBounds = YES;
+		imageView.layer.cornerRadius = [RCMessages bubbleRadius];
+		[self.viewBubble addSubview:imageView];
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (spinner == nil)
+	{
+		spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		[self.viewBubble addSubview:spinner];
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (imageManual == nil)
+	{
+		imageManual = [[UIImageView alloc] initWithImage:[RCMessages pictureImageManual]];
+		[self.viewBubble addSubview:imageManual];
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	textView.text = rcmessage.text;
+	if (rcmessage.status == RC_STATUS_LOADING)
+	{
+		imageView.image = nil;
+		[spinner startAnimating];
+		imageManual.hidden = YES;
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (rcmessage.status == RC_STATUS_SUCCEED)
+	{
+		imageView.image = rcmessage.picture_image;
+		[spinner stopAnimating];
+		imageManual.hidden = YES;
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (rcmessage.status == RC_STATUS_MANUAL)
+	{
+		imageView.image = nil;
+		[spinner stopAnimating];
+		imageManual.hidden = NO;
+	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 }
 
@@ -65,11 +90,23 @@
 - (void)layoutSubviews
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	CGSize size = [RCMessagesEmojiCell size:indexPath messagesView:messagesView];
+	CGSize size = [RCPictureMessageCell size:indexPath messagesView:messagesView];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	[super layoutSubviews:size];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	textView.frame = CGRectMake(0, 0, size.width, size.height);
+	imageView.frame = CGRectMake(0, 0, size.width, size.height);
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	CGFloat widthSpinner = spinner.frame.size.width;
+	CGFloat heightSpinner = spinner.frame.size.height;
+	CGFloat xSpinner = (size.width - widthSpinner) / 2;
+	CGFloat ySpinner = (size.height - heightSpinner) / 2;
+	spinner.frame = CGRectMake(xSpinner, ySpinner, widthSpinner, heightSpinner);
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	CGFloat widthManual = imageManual.image.size.width;
+	CGFloat heightManual = imageManual.image.size.height;
+	CGFloat xManual = (size.width - widthManual) / 2;
+	CGFloat yManual = (size.height - heightManual) / 2;
+	imageManual.frame = CGRectMake(xManual, yManual, widthManual, heightManual);
 }
 
 #pragma mark - Size methods
@@ -79,7 +116,7 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
 	CGSize size = [self size:indexPath messagesView:messagesView];
-	return [RCMessagesCell height:indexPath messagesView:messagesView size:size];
+	return size.height;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -87,16 +124,8 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
 	RCMessage *rcmessage = [messagesView rcmessage:indexPath];
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGFloat maxwidth = (0.6 * SCREEN_WIDTH) - [RCMessages emojiInsetLeft] - [RCMessages emojiInsetRight];
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGRect rect = [rcmessage.text boundingRectWithSize:CGSizeMake(maxwidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin
-											attributes:@{NSFontAttributeName:[RCMessages emojiFont]} context:nil];
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGFloat width = rect.size.width + [RCMessages emojiInsetLeft] + [RCMessages emojiInsetRight];
-	CGFloat height = rect.size.height + [RCMessages emojiInsetTop] + [RCMessages emojiInsetBottom];
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	return CGSizeMake(fmaxf(width, [RCMessages emojiBubbleWidthMin]), fmaxf(height, [RCMessages emojiBubbleHeightMin]));
+	CGFloat width = fminf([RCMessages pictureBubbleWidth], rcmessage.picture_width);
+	return CGSizeMake(width, rcmessage.picture_height * width / rcmessage.picture_width);
 }
 
 @end

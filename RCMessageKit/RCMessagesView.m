@@ -10,13 +10,19 @@
 // THE SOFTWARE.
 
 #import "RCMessagesView.h"
-#import "RCMessagesStatusCell.h"
-#import "RCMessagesTextCell.h"
-#import "RCMessagesEmojiCell.h"
-#import "RCMessagesPictureCell.h"
-#import "RCMessagesVideoCell.h"
-#import "RCMessagesAudioCell.h"
-#import "RCMessagesLocationCell.h"
+
+#import "RCSectionHeaderCell.h"
+#import "RCBubbleHeaderCell.h"
+#import "RCBubbleFooterCell.h"
+#import "RCSectionFooterCell.h"
+
+#import "RCStatusCell.h"
+#import "RCTextMessageCell.h"
+#import "RCEmojiMessageCell.h"
+#import "RCPictureMessageCell.h"
+#import "RCVideoMessageCell.h"
+#import "RCAudioMessageCell.h"
+#import "RCLocationMessageCell.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 @interface RCMessagesView()
@@ -59,13 +65,18 @@
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	self.navigationItem.titleView = viewTitle;
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	[self.tableView registerClass:[RCMessagesStatusCell class] forCellReuseIdentifier:@"RCMessagesStatusCell"];
-	[self.tableView registerClass:[RCMessagesTextCell class] forCellReuseIdentifier:@"RCMessagesTextCell"];
-	[self.tableView registerClass:[RCMessagesEmojiCell class] forCellReuseIdentifier:@"RCMessagesEmojiCell"];
-	[self.tableView registerClass:[RCMessagesPictureCell class] forCellReuseIdentifier:@"RCMessagesPictureCell"];
-	[self.tableView registerClass:[RCMessagesVideoCell class] forCellReuseIdentifier:@"RCMessagesVideoCell"];
-	[self.tableView registerClass:[RCMessagesAudioCell class] forCellReuseIdentifier:@"RCMessagesAudioCell"];
-	[self.tableView registerClass:[RCMessagesLocationCell class] forCellReuseIdentifier:@"RCMessagesLocationCell"];
+	[self.tableView registerClass:[RCSectionHeaderCell class] forCellReuseIdentifier:@"RCSectionHeaderCell"];
+	[self.tableView registerClass:[RCBubbleHeaderCell class] forCellReuseIdentifier:@"RCBubbleHeaderCell"];
+	[self.tableView registerClass:[RCBubbleFooterCell class] forCellReuseIdentifier:@"RCBubbleFooterCell"];
+	[self.tableView registerClass:[RCSectionFooterCell class] forCellReuseIdentifier:@"RCSectionFooterCell"];
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	[self.tableView registerClass:[RCStatusCell class] forCellReuseIdentifier:@"RCStatusCell"];
+	[self.tableView registerClass:[RCTextMessageCell class] forCellReuseIdentifier:@"RCTextMessageCell"];
+	[self.tableView registerClass:[RCEmojiMessageCell class] forCellReuseIdentifier:@"RCEmojiMessageCell"];
+	[self.tableView registerClass:[RCPictureMessageCell class] forCellReuseIdentifier:@"RCPictureMessageCell"];
+	[self.tableView registerClass:[RCVideoMessageCell class] forCellReuseIdentifier:@"RCVideoMessageCell"];
+	[self.tableView registerClass:[RCAudioMessageCell class] forCellReuseIdentifier:@"RCAudioMessageCell"];
+	[self.tableView registerClass:[RCLocationMessageCell class] forCellReuseIdentifier:@"RCLocationMessageCell"];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	self.tableView.tableHeaderView = viewLoadEarlier;
 	//---------------------------------------------------------------------------------------------------------------------------------------------
@@ -169,7 +180,7 @@
 #pragma mark - Header, Footer methods
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-- (NSString *)textCellHeader:(NSIndexPath *)indexPath
+- (NSString *)textSectionHeader:(NSIndexPath *)indexPath
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
 	return nil;
@@ -190,7 +201,7 @@
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-- (NSString *)textCellFooter:(NSIndexPath *)indexPath
+- (NSString *)textSectionFooter:(NSIndexPath *)indexPath
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
 	return nil;
@@ -390,15 +401,6 @@
 
 }
 
-#pragma mark - User actions (cell tap)
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-- (void)actionTapCell:(NSIndexPath *)indexPath
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-
-}
-
 #pragma mark - User actions (bubble tap)
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -460,13 +462,6 @@
 
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-- (void)actionSelectMember
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-	
-}
-
 #pragma mark - UIScrollViewDelegate
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -482,30 +477,80 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	return 1;
+	return 0;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	return 0;
+	return 5;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+	return [RCMessages sectionHeaderMargin];
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+	return [RCMessages sectionFooterMargin];
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+	view.tintColor = [UIColor clearColor];
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+- (void)tableView:(UITableView *)tableView willDisplayFooterView:(UIView *)view forSection:(NSInteger)section
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+	view.tintColor = [UIColor clearColor];
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	RCMessage *rcmessage = [self rcmessage:indexPath];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if (rcmessage.type == RC_TYPE_STATUS)	return [RCMessagesStatusCell height:indexPath messagesView:self];
-	if (rcmessage.type == RC_TYPE_TEXT)		return [RCMessagesTextCell height:indexPath messagesView:self];
-	if (rcmessage.type == RC_TYPE_EMOJI)	return [RCMessagesEmojiCell height:indexPath messagesView:self];
-	if (rcmessage.type == RC_TYPE_PICTURE)	return [RCMessagesPictureCell height:indexPath messagesView:self];
-	if (rcmessage.type == RC_TYPE_VIDEO)	return [RCMessagesVideoCell height:indexPath messagesView:self];
-	if (rcmessage.type == RC_TYPE_AUDIO)	return [RCMessagesAudioCell height:indexPath messagesView:self];
-	if (rcmessage.type == RC_TYPE_LOCATION)	return [RCMessagesLocationCell height:indexPath messagesView:self];
+	if (indexPath.row == 0) // Section header
+	{
+		return [RCSectionHeaderCell height:indexPath messagesView:self];
+	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (indexPath.row == 1) // Bubble header
+	{
+		return [RCBubbleHeaderCell height:indexPath messagesView:self];
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (indexPath.row == 2) // Message body
+	{
+		RCMessage *rcmessage = [self rcmessage:indexPath];
+		if (rcmessage.type == RC_TYPE_STATUS)	return [RCStatusCell height:indexPath messagesView:self];
+		if (rcmessage.type == RC_TYPE_TEXT)		return [RCTextMessageCell height:indexPath messagesView:self];
+		if (rcmessage.type == RC_TYPE_EMOJI)	return [RCEmojiMessageCell height:indexPath messagesView:self];
+		if (rcmessage.type == RC_TYPE_PICTURE)	return [RCPictureMessageCell height:indexPath messagesView:self];
+		if (rcmessage.type == RC_TYPE_VIDEO)	return [RCVideoMessageCell height:indexPath messagesView:self];
+		if (rcmessage.type == RC_TYPE_AUDIO)	return [RCAudioMessageCell height:indexPath messagesView:self];
+		if (rcmessage.type == RC_TYPE_LOCATION)	return [RCLocationMessageCell height:indexPath messagesView:self];
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (indexPath.row == 3) // Bubble footer
+	{
+		return [RCBubbleFooterCell height:indexPath messagesView:self];
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (indexPath.row == 4) // Section footer
+	{
+		return [RCSectionFooterCell height:indexPath messagesView:self];
+	}
 	return 0;
 }
 
@@ -513,89 +558,82 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	RCMessage *rcmessage = [self rcmessage:indexPath];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if (rcmessage.type == RC_TYPE_STATUS)	return [self tableView:tableView cellStatusForRowAtIndexPath:indexPath];
-	if (rcmessage.type == RC_TYPE_TEXT)		return [self tableView:tableView cellTextForRowAtIndexPath:indexPath];
-	if (rcmessage.type == RC_TYPE_EMOJI)	return [self tableView:tableView cellEmojiForRowAtIndexPath:indexPath];
-	if (rcmessage.type == RC_TYPE_PICTURE)	return [self tableView:tableView cellPictureForRowAtIndexPath:indexPath];
-	if (rcmessage.type == RC_TYPE_VIDEO)	return [self tableView:tableView cellVideoForRowAtIndexPath:indexPath];
-	if (rcmessage.type == RC_TYPE_AUDIO)	return [self tableView:tableView cellAudioForRowAtIndexPath:indexPath];
-	if (rcmessage.type == RC_TYPE_LOCATION)	return [self tableView:tableView cellLocationForRowAtIndexPath:indexPath];
+	if (indexPath.row == 0)	// Section header
+	{
+		RCSectionHeaderCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCSectionHeaderCell" forIndexPath:indexPath];
+		[cell bindData:indexPath messagesView:self];
+		return cell;
+	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (indexPath.row == 1) // Bubble header
+	{
+		RCBubbleHeaderCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCBubbleHeaderCell" forIndexPath:indexPath];
+		[cell bindData:indexPath messagesView:self];
+		return cell;
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (indexPath.row == 2) // Message body
+	{
+		RCMessage *rcmessage = [self rcmessage:indexPath];
+		if (rcmessage.type == RC_TYPE_STATUS)
+		{
+			RCStatusCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCStatusCell" forIndexPath:indexPath];
+			[cell bindData:indexPath messagesView:self];
+			return cell;
+		}
+		if (rcmessage.type == RC_TYPE_TEXT)
+		{
+			RCTextMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCTextMessageCell" forIndexPath:indexPath];
+			[cell bindData:indexPath messagesView:self];
+			return cell;
+		}
+		if (rcmessage.type == RC_TYPE_EMOJI)
+		{
+			RCEmojiMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCEmojiMessageCell" forIndexPath:indexPath];
+			[cell bindData:indexPath messagesView:self];
+			return cell;
+		}
+		if (rcmessage.type == RC_TYPE_PICTURE)
+		{
+			RCPictureMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCPictureMessageCell" forIndexPath:indexPath];
+			[cell bindData:indexPath messagesView:self];
+			return cell;
+		}
+		if (rcmessage.type == RC_TYPE_VIDEO)
+		{
+			RCVideoMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCVideoMessageCell" forIndexPath:indexPath];
+			[cell bindData:indexPath messagesView:self];
+			return cell;
+		}
+		if (rcmessage.type == RC_TYPE_AUDIO)
+		{
+			RCAudioMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCAudioMessageCell" forIndexPath:indexPath];
+			[cell bindData:indexPath messagesView:self];
+			return cell;
+		}
+		if (rcmessage.type == RC_TYPE_LOCATION)
+		{
+			RCLocationMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCLocationMessageCell" forIndexPath:indexPath];
+			[cell bindData:indexPath messagesView:self];
+			return cell;
+		}
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (indexPath.row == 3) // Bubble footer
+	{
+		RCBubbleFooterCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCBubbleFooterCell" forIndexPath:indexPath];
+		[cell bindData:indexPath messagesView:self];
+		return cell;
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	if (indexPath.row == 4) // Section footer
+	{
+		RCSectionFooterCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCSectionFooterCell" forIndexPath:indexPath];
+		[cell bindData:indexPath messagesView:self];
+		return cell;
+	}
 	return nil;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-- (UITableViewCell *)tableView:(UITableView *)tableView cellStatusForRowAtIndexPath:(NSIndexPath *)indexPath
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-	RCMessagesStatusCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCMessagesStatusCell" forIndexPath:indexPath];
-	[cell bindData:indexPath messagesView:self];
-	return cell;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-- (UITableViewCell *)tableView:(UITableView *)tableView cellTextForRowAtIndexPath:(NSIndexPath *)indexPath
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-	RCMessagesTextCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCMessagesTextCell" forIndexPath:indexPath];
-	[cell bindData:indexPath messagesView:self];
-	return cell;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-- (UITableViewCell *)tableView:(UITableView *)tableView cellEmojiForRowAtIndexPath:(NSIndexPath *)indexPath
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-	RCMessagesEmojiCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCMessagesEmojiCell" forIndexPath:indexPath];
-	[cell bindData:indexPath messagesView:self];
-	return cell;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-- (UITableViewCell *)tableView:(UITableView *)tableView cellPictureForRowAtIndexPath:(NSIndexPath *)indexPath
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-	RCMessagesPictureCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCMessagesPictureCell" forIndexPath:indexPath];
-	[cell bindData:indexPath messagesView:self];
-	return cell;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-- (UITableViewCell *)tableView:(UITableView *)tableView cellVideoForRowAtIndexPath:(NSIndexPath *)indexPath
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-	RCMessagesVideoCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCMessagesVideoCell" forIndexPath:indexPath];
-	[cell bindData:indexPath messagesView:self];
-	return cell;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-- (UITableViewCell *)tableView:(UITableView *)tableView cellAudioForRowAtIndexPath:(NSIndexPath *)indexPath
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-	RCMessagesAudioCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCMessagesAudioCell" forIndexPath:indexPath];
-	[cell bindData:indexPath messagesView:self];
-	return cell;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-- (UITableViewCell *)tableView:(UITableView *)tableView cellLocationForRowAtIndexPath:(NSIndexPath *)indexPath
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-	RCMessagesLocationCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RCMessagesLocationCell" forIndexPath:indexPath];
-	[cell bindData:indexPath messagesView:self];
-	return cell;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(nonnull NSIndexPath *)indexPath
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-	RCMessage *rcmessage = [self rcmessage:indexPath];
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	return (rcmessage.type != RC_TYPE_STATUS);
 }
 
 #pragma mark - Helper methods
@@ -604,9 +642,9 @@
 - (void)scrollToBottom:(BOOL)animated
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	if ([self.tableView numberOfRowsInSection:0] > 0)
+	if ([self.tableView numberOfSections] > 0)
 	{
-		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:([self.tableView numberOfRowsInSection:0] - 1) inSection:0];
+		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:([self.tableView numberOfSections] - 1)];
 		[self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:animated];
 	}
 }
@@ -617,8 +655,6 @@
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	if ([text isEqualToString:@"@"])
-		[self actionSelectMember];
 	return YES;
 }
 
@@ -711,6 +747,7 @@
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	if ((sending) && ([[NSDate date] timeIntervalSinceDate:dateAudioStart] >= 1))
 	{
+		[self dismissKeyboard];
 		[self actionSendAudio:audioRecorder.url.path];
 	}
 	else [audioRecorder deleteRecording];

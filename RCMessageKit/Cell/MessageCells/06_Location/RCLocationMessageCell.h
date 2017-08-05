@@ -9,15 +9,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "RCMessagesCell.h"
+#import "RCMessageCell.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-@interface RCMessagesAudioCell : RCMessagesCell
+@interface RCLocationMessageCell : RCMessageCell
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
-@property (strong, nonatomic) UIImageView *imageStatus;
-@property (strong, nonatomic) UILabel *labelDuration;
-@property (strong, nonatomic) UIImageView *imageManual;
+@property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UIActivityIndicatorView *spinner;
 
 - (void)bindData:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView;

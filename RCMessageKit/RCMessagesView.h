@@ -49,10 +49,10 @@
 
 #pragma mark - Header, Footer methods
 
-- (NSString *)textCellHeader:(NSIndexPath *)indexPath;
+- (NSString *)textSectionHeader:(NSIndexPath *)indexPath;
 - (NSString *)textBubbleHeader:(NSIndexPath *)indexPath;
 - (NSString *)textBubbleFooter:(NSIndexPath *)indexPath;
-- (NSString *)textCellFooter:(NSIndexPath *)indexPath;
+- (NSString *)textSectionFooter:(NSIndexPath *)indexPath;
 
 #pragma mark - Menu controller methods
 
@@ -61,10 +61,6 @@
 #pragma mark - Typing indicator methods
 
 - (void)typingIndicatorShow:(BOOL)show animated:(BOOL)animated;
-
-#pragma mark - User actions (cell tap)
-
-- (void)actionTapCell:(NSIndexPath *)indexPath;
 
 #pragma mark - User actions (bubble tap)
 

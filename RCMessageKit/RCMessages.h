@@ -43,23 +43,23 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------
-// Cell
+// Section
 //---------------------------------------------------------------------------------
-@property (assign, nonatomic) CGFloat cellMarginTop;
+@property (assign, nonatomic) CGFloat sectionHeaderMargin;
 
-@property (assign, nonatomic) CGFloat cellHeaderHeight;
-@property (assign, nonatomic) CGFloat cellHeaderLeft;
-@property (assign, nonatomic) CGFloat cellHeaderRight;
-@property (strong, nonatomic) UIColor *cellHeaderColor;
-@property (strong, nonatomic) UIFont *cellHeaderFont;
+@property (assign, nonatomic) CGFloat sectionHeaderHeight;
+@property (assign, nonatomic) CGFloat sectionHeaderLeft;
+@property (assign, nonatomic) CGFloat sectionHeaderRight;
+@property (strong, nonatomic) UIColor *sectionHeaderColor;
+@property (strong, nonatomic) UIFont *sectionHeaderFont;
 
-@property (assign, nonatomic) CGFloat cellFooterHeight;
-@property (assign, nonatomic) CGFloat cellFooterLeft;
-@property (assign, nonatomic) CGFloat cellFooterRight;
-@property (strong, nonatomic) UIColor *cellFooterColor;
-@property (strong, nonatomic) UIFont *cellFooterFont;
+@property (assign, nonatomic) CGFloat sectionFooterHeight;
+@property (assign, nonatomic) CGFloat sectionFooterLeft;
+@property (assign, nonatomic) CGFloat sectionFooterRight;
+@property (strong, nonatomic) UIColor *sectionFooterColor;
+@property (strong, nonatomic) UIFont *sectionFooterFont;
 
-@property (assign, nonatomic) CGFloat cellMarginBottom;
+@property (assign, nonatomic) CGFloat sectionFooterMargin;
 //---------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------
@@ -232,23 +232,23 @@
 + (RCMessages *)shared;
 
 //---------------------------------------------------------------------------------
-// Cell
+// Section
 //---------------------------------------------------------------------------------
-+ (CGFloat)cellMarginTop;
++ (CGFloat)sectionHeaderMargin;
 
-+ (CGFloat)cellHeaderHeight;
-+ (CGFloat)cellHeaderLeft;
-+ (CGFloat)cellHeaderRight;
-+ (UIColor *)cellHeaderColor;
-+ (UIFont *)cellHeaderFont;
++ (CGFloat)sectionHeaderHeight;
++ (CGFloat)sectionHeaderLeft;
++ (CGFloat)sectionHeaderRight;
++ (UIColor *)sectionHeaderColor;
++ (UIFont *)sectionHeaderFont;
 
-+ (CGFloat)cellFooterHeight;
-+ (CGFloat)cellFooterLeft;
-+ (CGFloat)cellFooterRight;
-+ (UIColor *)cellFooterColor;
-+ (UIFont *)cellFooterFont;
++ (CGFloat)sectionFooterHeight;
++ (CGFloat)sectionFooterLeft;
++ (CGFloat)sectionFooterRight;
++ (UIColor *)sectionFooterColor;
++ (UIFont *)sectionFooterFont;
 
-+ (CGFloat)cellMarginBottom;
++ (CGFloat)sectionFooterMargin;
 //---------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------

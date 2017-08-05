@@ -9,10 +9,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "RCMessagesTextCell.h"
+#import "RCStatusCell.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-@interface RCMessagesTextCell()
+@interface RCStatusCell()
 {
 	NSIndexPath *indexPath;
 	RCMessagesView *messagesView;
@@ -20,8 +20,9 @@
 @end
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
-@implementation RCMessagesTextCell
+@implementation RCStatusCell
 
+@synthesize viewBubble;
 @synthesize textView;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -31,33 +32,39 @@
 	indexPath = indexPath_;
 	messagesView = messagesView_;
 	//---------------------------------------------------------------------------------------------------------------------------------------------
+	self.backgroundColor = [UIColor clearColor];
+	//---------------------------------------------------------------------------------------------------------------------------------------------
 	RCMessage *rcmessage = [messagesView rcmessage:indexPath];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	[super bindData:indexPath messagesView:messagesView];
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	self.viewBubble.backgroundColor = rcmessage.incoming ? [RCMessages textBubbleColorIncoming] : [RCMessages textBubbleColorOutgoing];
+	if (viewBubble == nil)
+	{
+		viewBubble = [[UIView alloc] init];
+		viewBubble.backgroundColor = [RCMessages statusBubbleColor];
+		viewBubble.layer.cornerRadius = [RCMessages statusBubbleRadius];
+		[self.contentView addSubview:viewBubble];
+		[self bubbleGestureRecognizer];
+	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	if (textView == nil)
 	{
 		textView = [[UITextView alloc] init];
-		textView.font = [RCMessages textFont];
+		textView.font = [RCMessages statusFont];
+		textView.textColor = [RCMessages statusTextColor];
 		textView.editable = NO;
 		textView.selectable = NO;
 		textView.scrollEnabled = NO;
 		textView.userInteractionEnabled = NO;
 		textView.backgroundColor = [UIColor clearColor];
 		textView.textContainer.lineFragmentPadding = 0;
-		textView.textContainerInset = [RCMessages textInset];
+		textView.textContainerInset = [RCMessages statusInset];
 		[self.viewBubble addSubview:textView];
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	textView.textColor = rcmessage.incoming ? [RCMessages textTextColorIncoming] : [RCMessages textTextColorOutgoing];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	textView.text = rcmessage.text;
 	//---------------------------------------------------------------------------------------------------------------------------------------------
@@ -67,11 +74,16 @@
 - (void)layoutSubviews
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	CGSize size = [RCMessagesTextCell size:indexPath messagesView:messagesView];
+	[super layoutSubviews];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	[super layoutSubviews:size];
+	CGSize size = [RCStatusCell size:indexPath messagesView:messagesView];
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	CGFloat yBubble = [RCMessages sectionHeaderMargin];
+	CGFloat xBubble = (SCREEN_WIDTH - size.width) / 2;
+	viewBubble.frame = CGRectMake(xBubble, yBubble, size.width, size.height);
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	textView.frame = CGRectMake(0, 0, size.width, size.height);
+	//---------------------------------------------------------------------------------------------------------------------------------------------
 }
 
 #pragma mark - Size methods
@@ -81,7 +93,7 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
 	CGSize size = [self size:indexPath messagesView:messagesView];
-	return [RCMessagesCell height:indexPath messagesView:messagesView size:size];
+	return size.height;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -90,15 +102,36 @@
 {
 	RCMessage *rcmessage = [messagesView rcmessage:indexPath];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGFloat maxwidth = (0.6 * SCREEN_WIDTH) - [RCMessages textInsetLeft] - [RCMessages textInsetRight];
+	CGFloat maxwidth = (0.95 * SCREEN_WIDTH) - [RCMessages statusInsetLeft] - [RCMessages statusInsetRight];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	CGRect rect = [rcmessage.text boundingRectWithSize:CGSizeMake(maxwidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin
-											attributes:@{NSFontAttributeName:[RCMessages textFont]} context:nil];
+											attributes:@{NSFontAttributeName:[RCMessages statusFont]} context:nil];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGFloat width = rect.size.width + [RCMessages textInsetLeft] + [RCMessages textInsetRight];
-	CGFloat height = rect.size.height + [RCMessages textInsetTop] + [RCMessages textInsetBottom];
+	CGFloat width = rect.size.width + [RCMessages statusInsetLeft] + [RCMessages statusInsetRight];
+	CGFloat height = rect.size.height + [RCMessages statusInsetTop] + [RCMessages statusInsetBottom];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	return CGSizeMake(fmaxf(width, [RCMessages textBubbleWidthMin]), fmaxf(height, [RCMessages textBubbleHeightMin]));
+	return CGSizeMake(width, height);
+}
+
+#pragma mark - Gesture recognizer methods
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+- (void)bubbleGestureRecognizer
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionTapBubble)];
+	[self.viewBubble addGestureRecognizer:tapGesture];
+	tapGesture.cancelsTouchesInView = NO;
+}
+
+#pragma mark - User actions
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+- (void)actionTapBubble
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+	[messagesView.view endEditing:YES];
+	[messagesView actionTapBubble:indexPath];
 }
 
 @end

@@ -9,10 +9,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "RCMessagesStatusCell.h"
+#import "RCMessageCell.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-@interface RCMessagesStatusCell()
+@interface RCMessageCell()
 {
 	NSIndexPath *indexPath;
 	RCMessagesView *messagesView;
@@ -20,10 +20,10 @@
 @end
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
-@implementation RCMessagesStatusCell
+@implementation RCMessageCell
 
 @synthesize viewBubble;
-@synthesize textView;
+@synthesize imageAvatar, labelAvatar;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 - (void)bindData:(NSIndexPath *)indexPath_ messagesView:(RCMessagesView *)messagesView_
@@ -32,10 +32,6 @@
 	indexPath = indexPath_;
 	messagesView = messagesView_;
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	RCMessage *rcmessage = [messagesView rcmessage:indexPath];
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------------------------------------------------------------------------
 	self.backgroundColor = [UIColor clearColor];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -43,81 +39,57 @@
 	if (viewBubble == nil)
 	{
 		viewBubble = [[UIView alloc] init];
-		viewBubble.backgroundColor = [RCMessages statusBubbleColor];
-		viewBubble.layer.cornerRadius = [RCMessages statusBubbleRadius];
+		viewBubble.layer.cornerRadius = [RCMessages bubbleRadius];
 		[self.contentView addSubview:viewBubble];
 		[self bubbleGestureRecognizer];
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if (textView == nil)
+	if (imageAvatar == nil)
 	{
-		textView = [[UITextView alloc] init];
-		textView.font = [RCMessages statusFont];
-		textView.textColor = [RCMessages statusTextColor];
-		textView.editable = NO;
-		textView.selectable = NO;
-		textView.scrollEnabled = NO;
-		textView.userInteractionEnabled = NO;
-		textView.backgroundColor = [UIColor clearColor];
-		textView.textContainer.lineFragmentPadding = 0;
-		textView.textContainerInset = [RCMessages statusInset];
-		[self.viewBubble addSubview:textView];
+		imageAvatar = [[UIImageView alloc] init];
+		imageAvatar.layer.masksToBounds = YES;
+		imageAvatar.layer.cornerRadius = [RCMessages avatarDiameter] / 2;
+		imageAvatar.backgroundColor = [RCMessages avatarBackColor];
+		imageAvatar.userInteractionEnabled = YES;
+		[self.contentView addSubview:imageAvatar];
+		[self avatarGestureRecognizer];
 	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	imageAvatar.image = [messagesView avatarImage:indexPath];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	textView.text = rcmessage.text;
+	if (labelAvatar == nil)
+	{
+		labelAvatar = [[UILabel alloc] init];
+		labelAvatar.font = [RCMessages avatarFont];
+		labelAvatar.textColor = [RCMessages avatarTextColor];
+		labelAvatar.textAlignment = NSTextAlignmentCenter;
+		[self.contentView addSubview:labelAvatar];
+	}
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	labelAvatar.text = (imageAvatar.image == nil) ? [messagesView avatarInitials:indexPath] : nil;
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-- (void)layoutSubviews
+- (void)layoutSubviews:(CGSize)size
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
 	[super layoutSubviews];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGSize size = [RCMessagesStatusCell size:indexPath messagesView:messagesView];
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGFloat yBubble = [RCMessages cellMarginTop];
-	CGFloat xBubble = (SCREEN_WIDTH - size.width) / 2;
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	viewBubble.frame = CGRectMake(xBubble, yBubble, size.width, size.height);
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	textView.frame = CGRectMake(0, 0, size.width, size.height);
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-}
-
-#pragma mark - Size methods
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-+ (CGFloat)height:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
-	CGSize size = [self size:indexPath messagesView:messagesView];
-	return [RCMessages cellMarginTop] + size.height + [RCMessages cellMarginBottom];
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-+ (CGSize)size:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-{
 	RCMessage *rcmessage = [messagesView rcmessage:indexPath];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGFloat maxwidth = (0.95 * SCREEN_WIDTH) - [RCMessages statusInsetLeft] - [RCMessages statusInsetRight];
+	CGFloat xBubble = rcmessage.incoming ? [RCMessages bubbleMarginLeft] : (SCREEN_WIDTH - [RCMessages bubbleMarginRight] - size.width);
+	viewBubble.frame = CGRectMake(xBubble, 0, size.width, size.height);
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGRect rect = [rcmessage.text boundingRectWithSize:CGSizeMake(maxwidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin
-											attributes:@{NSFontAttributeName:[RCMessages statusFont]} context:nil];
+	CGFloat diameter = [RCMessages avatarDiameter];
+	CGFloat xAvatar = rcmessage.incoming ? [RCMessages avatarMarginLeft] : (SCREEN_WIDTH - [RCMessages avatarMarginRight] - diameter);
+	imageAvatar.frame = CGRectMake(xAvatar, size.height - diameter, diameter, diameter);
+	labelAvatar.frame = CGRectMake(xAvatar, size.height - diameter, diameter, diameter);
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGFloat width = rect.size.width + [RCMessages statusInsetLeft] + [RCMessages statusInsetRight];
-	CGFloat height = rect.size.height + [RCMessages statusInsetTop] + [RCMessages statusInsetBottom];
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	return CGSizeMake(width, height);
 }
 
 #pragma mark - Gesture recognizer methods
@@ -129,6 +101,18 @@
 	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionTapBubble)];
 	[self.viewBubble addGestureRecognizer:tapGesture];
 	tapGesture.cancelsTouchesInView = NO;
+	//---------------------------------------------------------------------------------------------------------------------------------------------
+	UILongPressGestureRecognizer *longGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(actionLongBubble:)];
+	[self.viewBubble addGestureRecognizer:longGesture];
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+- (void)avatarGestureRecognizer
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionTapAvatar)];
+	[self.imageAvatar addGestureRecognizer:tapGesture];
+	tapGesture.cancelsTouchesInView = NO;
 }
 
 #pragma mark - User actions
@@ -139,6 +123,47 @@
 {
 	[messagesView.view endEditing:YES];
 	[messagesView actionTapBubble:indexPath];
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+- (void)actionTapAvatar
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+	[messagesView.view endEditing:YES];
+	[messagesView actionTapAvatar:indexPath];
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+- (void)actionLongBubble:(UILongPressGestureRecognizer *)gestureRecognizer
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+	switch (gestureRecognizer.state)
+	{
+		case UIGestureRecognizerStateBegan:
+		{
+			[self actionMenu];
+			break;
+		}
+		case UIGestureRecognizerStateChanged:	break;
+		case UIGestureRecognizerStateEnded:		break;
+		case UIGestureRecognizerStatePossible:	break;
+		case UIGestureRecognizerStateCancelled:	break;
+		case UIGestureRecognizerStateFailed:	break;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+- (void)actionMenu
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+	if ([messagesView.textInput isFirstResponder] == NO)
+	{
+		UIMenuController *menuController = [UIMenuController sharedMenuController];
+		[menuController setMenuItems:[messagesView menuItems:indexPath]];
+		[menuController setTargetRect:viewBubble.frame inView:self.contentView];
+		[menuController setMenuVisible:YES animated:YES];
+	}
+	else [messagesView.textInput resignFirstResponder];
 }
 
 @end
