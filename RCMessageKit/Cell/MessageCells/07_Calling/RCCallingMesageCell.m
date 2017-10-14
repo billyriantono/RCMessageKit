@@ -10,15 +10,18 @@
 
 @implementation RCCallingMesageCell
 
-- (void)awakeFromNib {
-    [super awakeFromNib];
-    // Initialization code
+- (void)bindData:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView {
+    [super bindData:indexPath messagesView:messagesView];
+    
+    _indexPath = indexPath;
+    _vc = messagesView;
+    
+    RCMessage *rcmessage = [_vc rcmessage:_indexPath];
+    
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
++ (CGFloat)height:(NSIndexPath *)indexPath messagesView:(RCMessagesView *)messagesView {
+    
 }
 
 @end
